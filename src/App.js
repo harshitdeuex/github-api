@@ -12,24 +12,19 @@ function App() {
   const [firstProfileData, setFirstProfileData] = useState("");
   const [firstProfileName, setFirstProfileName] = useState("");
 
-  const [secondProfileError, setSecondProfileError] = useState("");
-  const [secondProfileData, setSecondProfileData] = useState("");
-  const [secondProfileName, setSecondProfileName] = useState("");
-
-  const emptyInputFields = () => {
-    setFirstProfileName("");
-    setSecondProfileName("");
-  }
-
   const getProfileData = async (userName, setProfileData, setProfileError) => {
+
+      const CancelToken = axios.CancelToken;
+      const source = CancelToken.source();
     
-      await axios.get(BASE_URL + userName)
+      await axios.get(BASE_URL + userName, {cancelToken: source.token})
       .then((response) => {
-      const data = response.data;
-      setProfileData(data);
-      console.log("Profile data: ", firstProfileData);
-      emptyInputFields();
-      setProfileError("");
+        if(userName === response.data.login){
+          const data = response.data;
+          setProfileData(data);
+          console.log("Profile data: ", firstProfileData);
+          setProfileError("");
+        }
        })
       .catch((error) => {
         setProfileData("");
@@ -37,26 +32,20 @@ function App() {
           setProfileError(error.response.statusText);
         } else if (error.request){
           setProfileError(error.request.XMLHttpRequest.statusText)
+          console.log(error);
+        } else if (axios.isCancel(error)) {
+          setProfileError(error.message);
+          console.log("Axios cancelled: ", error.message);
         } else {
           setProfileError("Unknown Error");
         }
       })    
   }
 
-  const handleSubmit = () => {
-    const inputFirst = firstProfileName.trim().toLowerCase();
-    setFirstProfileName(inputFirst);
-    const inputSecond = secondProfileName.trim().toLowerCase();
-    setSecondProfileName(inputSecond);
-
-    if(inputFirst.includes(" ") || inputSecond.includes(" ")){
-      alert("Username should not contain space")
-    } else if (!inputFirst || !inputSecond){
-      alert("Please Enter All fields");
-    } else {
-      getProfileData(inputFirst, setFirstProfileData, setFirstProfileError);
-      getProfileData(inputSecond, setSecondProfileData, setSecondProfileError);
-    }
+  const handleSubmit = (input) => {
+    setFirstProfileName(input);
+    console.log("submitted");
+    getProfileData(input, setFirstProfileData, setFirstProfileError);
   }
   
   return (
@@ -68,17 +57,8 @@ function App() {
           profileName = {firstProfileName}
           setProfileName = {setFirstProfileName}
           profileError = {firstProfileError}
+          handleSubmit = {handleSubmit}
         />
-       
-        <button onClick={handleSubmit}>Get Profile Details</button>
-
-        <ProfileContainer 
-          profileData = {secondProfileData}
-          profileName = {secondProfileName}
-          setProfileName = {setSecondProfileName}
-          profileError = {secondProfileError}
-        />
-
       </div>
     </div>
   );
