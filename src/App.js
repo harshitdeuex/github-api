@@ -2,120 +2,132 @@ import './App.css';
 import React, {useState} from 'react';
 import axios from 'axios';
 
-const maleDummyImage = "https://st.depositphotos.com/2101611/3925/v/600/depositphotos_39258143-stock-illustration-businessman-avatar-profile-picture.jpg";
+const maleDummyImage = "https://st2.depositphotos.com/1502311/12020/v/600/depositphotos_120206862-stock-illustration-profile-picture-vector.jpg";
 const femaleDummyImage = "https://st2.depositphotos.com/4111759/12123/v/600/depositphotos_121233300-stock-illustration-female-default-avatar-gray-profile.jpg";
 const BASE_URL = "https://api.github.com/users/"; 
 const DEFAULT_ERROR_MESSAGE = "NOT FOUND";
 
 function App() {
 
-  const [firstUserError, setFirstUserError] = useState("");
-  const [firstUserData, setFirstUserData] = useState(null);
-  const [firstUserImage, setFirstUserImage] = useState(maleDummyImage);
-  const [secondUserError, setSecondUserError] = useState("");
-  const [secondUserData, setSecondUserData] = useState(null);
-  const [secondUserImage, setSecondUserImage] = useState(femaleDummyImage);
-  const [firstUserName, setFirstUserName] = useState("");
-  const [secondUserName, setSecondUserName] = useState("");
+  const [firstProfileError, setFirstProfileError] = useState("");
+  const [firstProfileData, setFirstProfileData] = useState(null);
+  const [firstProfileImage, setFirstProfileImage] = useState(maleDummyImage);
+  const [firstProfileName, setFirstProfileName] = useState("");
 
-  const resetProfiles = () => {
-    setFirstUserError("");
-    setFirstUserData(null);
-    setFirstUserImage(maleDummyImage);
-    setSecondUserError("");
-    setSecondUserData(null);
-    setSecondUserImage(femaleDummyImage);
-  }
+  const [secondProfileError, setSecondProfileError] = useState("");
+  const [secondProfileData, setSecondProfileData] = useState(null);
+  const [secondProfileImage, setSecondProfileImage] = useState(femaleDummyImage)
+  const [secondProfileName, setSecondProfileName] = useState("");
+
+  /* const resetProfiles = () => {
+    setFirstProfileError("");
+    setFirstProfileData(null);
+    setFirstProfileImage(maleDummyImage);
+    setSecondProfileError("");
+    setSecondProfileData(null);
+    setSecondProfileImage(femaleDummyImage);
+  } */
 
   const emptyInputFields = () => {
-    setFirstUserName("");
-    setSecondUserName("");
+    setFirstProfileName("");
+    setSecondProfileName("");
   }
 
-  const getFirstUserData = async (userName) => {
+  const handleFirstProfileError = (error) => {
+    if(error.response){
+      setFirstProfileError(error.response.statusText);
+      console.log("Response Error 1: ",error.response);
+    } else if (error.request){
+      setFirstProfileError(error.request.XMLHttpRequest.statusText)
+      console.log("Request error 1: ",error.request);
+    } else {
+      setFirstProfileError("Unknown Error");
+      console.log("Unknown error 1: ",error);
+    }
+  }
+
+  const handleSecondProfileError = (error) => {
+    if(error.response){
+      setSecondProfileError(error.response.statusText);
+      console.log("Response Error 2: ",error.response);
+    } else if (error.request){
+      setSecondProfileError(error.request.XMLHttpRequest.statusText)
+      console.log("Request error 2: ",error.request);
+    } else {
+      setSecondProfileError("Unknown Error");
+      console.log("Unknown error 2: ",error);
+    }
+  }
+
+  const getFirstProfileData = async (userName) => {
     
-      axios.get(BASE_URL + userName)
+      await axios.get(BASE_URL + userName)
       .then((response) => {
       const data = response.data;
       const image = response.data.avatar_url;
-      setFirstUserImage(image);
-      setFirstUserData(data);
+      setFirstProfileImage(image);
+      setFirstProfileData(data);
       emptyInputFields();
        })
       .catch((error) => {
-        if(error.response){
-          setFirstUserError(error.response.statusText);
-          console.log("Response Error 1: ",error.response);
-        } else if (error.request){
-          setFirstUserError(error.request.XMLHttpRequest.statusText)
-          console.log("Request error 1: ",error.request);
-        } else {
-          setFirstUserError("Unknown Error");
-          console.log("Unknown error 1: ",error);
-        }
+        handleFirstProfileError(error);
       })    
   }
 
-  const getSecondUserData = async (userName) => { 
+  const getSecondProfileData = async (userName) => { 
 
-    axios.get(BASE_URL + userName)
+      await axios.get(BASE_URL + userName)
       .then((response) => {
       const data = response.data;
       const image = response.data.avatar_url;
-      setSecondUserImage(image);
-      setSecondUserData(data);
+      setSecondProfileImage(image);
+      setSecondProfileData(data);
       emptyInputFields();
        })
       .catch((error) => {
-        if(error.response){
-          setSecondUserError(error.response.statusText);
-          console.log("Response Error 2: ",error.response);
-        } else if (error.request){
-          setSecondUserError(error.request.XMLHttpRequest.statusText)
-          console.log("Request error 2: ",error.request);
-        } else {
-          setSecondUserError("Unknown Error");
-          console.log("Unknown error 2: ",error);
-        }
+        handleSecondProfileError(error);
       })   
   }
   const handleSubmit = () => {
     const inputFirst = document.getElementById("input-field-1").value.trim().toLowerCase();
-    setFirstUserName(inputFirst);
+    setFirstProfileName(inputFirst);
     const inputSecond = document.getElementById("input-field-2").value.trim().toLowerCase();
-    setSecondUserName(inputSecond);
-    resetProfiles();
+    setSecondProfileName(inputSecond);
 
     if(inputFirst.includes(" ") || inputSecond.includes(" ")){
       alert("Username should not contain space")
     } else if (!inputFirst || !inputSecond){
       alert("Please Enter All fields");
     } else {
-      getFirstUserData(inputFirst);
-      getSecondUserData(inputSecond);
+      getFirstProfileData(inputFirst);
+      getSecondProfileData(inputSecond);
+      /* resetProfiles(); */
     }
   }
   
   return (
-    <div className="wrapper">
+    <div className="app">
+      <h2>Fetch GitHub Profiles</h2>
+      <div className="wrapper">
+      
       <div className="profile-container">
-        <img className="profile-image" src={firstUserImage} alt="profile 1"/>
+        <img className="profile-image" src={firstProfileImage} alt="profile 1"/>
         <input 
           className="input-field" 
-          value={firstUserName} 
-          onChange={(e) => setFirstUserName(e.target.value)} 
+          value={firstProfileName} 
+          onChange={(e) => setFirstProfileName(e.target.value)} 
           placeholder="Enter github user name" 
           id="input-field-1" 
           type="text"
         />
-        {firstUserError ? <p>User {firstUserError}</p> : ""}
+        {firstProfileError ? <p>Profile {firstProfileError}</p> : ""}
          
-        { firstUserData 
+        { firstProfileData 
           && 
           <div className="data-section">
-            <p>Username: {firstUserData.login ? firstUserData.login : DEFAULT_ERROR_MESSAGE}</p>
-            <p>Name: {firstUserData.name ? firstUserData.name.toUpperCase() : DEFAULT_ERROR_MESSAGE}</p>
-            <p>Number of Repos: {firstUserData.public_repos ? firstUserData.public_repos : DEFAULT_ERROR_MESSAGE}</p>
+            <p>Username: {firstProfileData.login ? firstProfileData.login : DEFAULT_ERROR_MESSAGE}</p>
+            <p>Name: {firstProfileData.name ? firstProfileData.name.toUpperCase() : DEFAULT_ERROR_MESSAGE}</p>
+            <p>Number of Repos: {firstProfileData.public_repos ? firstProfileData.public_repos : DEFAULT_ERROR_MESSAGE}</p>
           </div>
         }        
       </div>
@@ -123,28 +135,29 @@ function App() {
       <button onClick={handleSubmit}>Get Profile Details</button>
 
       <div className="profile-container">
-        <img className="profile-image" src={secondUserImage} alt="profile 2"/>
+        <img className="profile-image" src={secondProfileImage} alt="profile 2"/>
         <input 
           className="input-field" 
-          value={secondUserName} 
-          onChange={(e) => setSecondUserName(e.target.value)} 
+          value={secondProfileName} 
+          onChange={(e) => setSecondProfileName(e.target.value)} 
           placeholder="Enter github user name" 
           id="input-field-2" 
           type="text"
         />
 
-        {secondUserError ? <p>User {secondUserError}</p> : ""}
+        {secondProfileError ? <p>Profile {secondProfileError}</p> : ""}
          
-        { secondUserData 
+        { secondProfileData 
           && 
           <div className="data-section">
-            <p>Username: {secondUserData.login ? secondUserData.login : DEFAULT_ERROR_MESSAGE}</p>
-            <p>Name: {secondUserData.name ? secondUserData.name.toUpperCase() : DEFAULT_ERROR_MESSAGE}</p>
-            <p>Number of Repos: {secondUserData.public_repos ? secondUserData.public_repos : DEFAULT_ERROR_MESSAGE}</p>
+            <p>Username: {secondProfileData.login ? secondProfileData.login : DEFAULT_ERROR_MESSAGE}</p>
+            <p>Name: {secondProfileData.name ? secondProfileData.name.toUpperCase() : DEFAULT_ERROR_MESSAGE}</p>
+            <p>Number of Repos: {secondProfileData.public_repos ? secondProfileData.public_repos : DEFAULT_ERROR_MESSAGE}</p>
         </div>
         }
       </div>
 
+    </div>
     </div>
   );
 }

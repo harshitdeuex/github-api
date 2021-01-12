@@ -3,11 +3,14 @@
     flex-direction: row;
     justify-content: space-around;
     align-items: center;
+    margin: 0px 100px;
 }
 
 .profile-container{
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 button{
@@ -23,4 +26,8 @@ button{
 .input-field{
     margin: 20px 0px;
     align-self: left;
+}
+
+.app {
+    text-align: center;
 }
