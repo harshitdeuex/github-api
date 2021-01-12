@@ -13,13 +13,18 @@ function App() {
   const [firstProfileName, setFirstProfileName] = useState("");
 
   const getProfileData = async (userName, setProfileData, setProfileError) => {
+
+      const CancelToken = axios.CancelToken;
+      const source = CancelToken.source();
     
-      await axios.get(BASE_URL + userName)
+      await axios.get(BASE_URL + userName, {cancelToken: source.token})
       .then((response) => {
-      const data = response.data;
-      setProfileData(data);
-      console.log("Profile data: ", firstProfileData);
-      setProfileError("");
+        if(userName === response.data.login){
+          const data = response.data;
+          setProfileData(data);
+          console.log("Profile data: ", firstProfileData);
+          setProfileError("");
+        }
        })
       .catch((error) => {
         setProfileData("");
@@ -28,6 +33,9 @@ function App() {
         } else if (error.request){
           setProfileError(error.request.XMLHttpRequest.statusText)
           console.log(error);
+        } else if (axios.isCancel(error)) {
+          setProfileError(error.message);
+          console.log("Axios cancelled: ", error.message);
         } else {
           setProfileError("Unknown Error");
         }
