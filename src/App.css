@@ -1,0 +1,35 @@
+.wrapper{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    margin: 0px 100px;
+}
+
+.profile-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+button{
+    max-height: 50px;
+    max-width: 250px;
+}
+
+.profile-image {
+    height: 250px;
+    width: 200px;
+    border: 2px solid gray;
+    border-radius: 5%;
+}
+
+.input-field{
+    margin: 20px 0px;
+    align-self: left;
+}
+
+.app {
+    text-align: center;
+}
